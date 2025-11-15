@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row g-4">
+
+  <!-- 1. Upload Image -> Audio Description -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-primary text-white">
+        1. Upload Image -> Audio Description
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data" action="{% url 'accessibility:image_to_audio' %}">
+          {% csrf_token %}
+          {{ image_form.as_p }}
+          <button class="btn btn-primary" type="submit">Generate Audio Description</button>
+        </form>
+
+        {% if image_description %}
+          <hr>
+          <h6>Generated Description:</h6>
+          <p>{{ image_description }}</p>
+        {% endif %}
+
+        {% if image_audio_url %}
+          <h6>Audio:</h6>
+          <audio controls>
+            <source src="{{ image_audio_url }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Complex Text -> Visual Explanation -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-success text-white">
+        2. Paste Complex Text -> Simplified Visual Explanation
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'accessibility:text_to_visual' %}">
+          {% csrf_token %}
+          {{ complex_form.as_p }}
+          <button class="btn btn-success" type="submit">Generate Visual Explanation</button>
+        </form>
+
+        {% if visual_plan %}
+          <hr>
+          <h6>Title:</h6>
+          <p><strong>{{ visual_plan.short_title }}</strong></p>
+
+          <h6>Diagram Description:</h6>
+          <p>{{ visual_plan.diagram_description }}</p>
+
+          <h6>Labels / Nodes:</h6>
+          <pre class="small bg-light p-2 border">{{ visual_plan.labels_and_nodes }}</pre>
+
+          <h6>Simple Explanation:</h6>
+          <p>{{ visual_plan.simple_explanation }}</p>
+        {% endif %}
+
+        {% if diagram_image_url %}
+          <h6>Generated Diagram:</h6>
+          <img src="{{ diagram_image_url }}" class="img-fluid border rounded" alt="Generated diagram">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+  <!-- 3. Text -> Sign Language Description -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-warning">
+        3. Enter Text -> Sign Language Description
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'accessibility:text_to_sign' %}">
+          {% csrf_token %}
+          {{ sign_form.as_p }}
+          <button class="btn btn-warning" type="submit">Generate Sign Language Description</button>
+        </form>
+
+        {% if sign_result %}
+          <hr>
+          <h6>Simplified English:</h6>
+          <p>{{ sign_result.simplified_english }}</p>
+
+          <h6>ASL Gloss:</h6>
+          <pre class="bg-light p-2 border">{{ sign_result.asl_gloss }}</pre>
+
+          <h6>Body & Facial Notes:</h6>
+          <p>{{ sign_result.body_and_face_notes }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Upload Document -> Accessible Version -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-info text-white">
+        4. Upload Document -> Accessible Version
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data" action="{% url 'accessibility:document_accessible' %}">
+          {% csrf_token %}
+          {{ doc_form.as_p }}
+          <button class="btn btn-info" type="submit">Process Document</button>
+        </form>
+
+        {% if doc_accessible %}
+          <hr>
+          <h6>Simplified Text:</h6>
+          <p>{{ doc_accessible.simplified_text }}</p>
+
+          <h6>Key Bullet Points:</h6>
+          <pre class="bg-light p-2 border">{{ doc_accessible.bullet_points }}</pre>
+
+          <h6>Alt-Text Style Summary:</h6>
+          <p>{{ doc_accessible.alt_summary }}</p>
+        {% endif %}
+
+        {% if doc_audio_url %}
+          <h6>Audio Summary:</h6>
+          <audio controls>
+            <source src="{{ doc_audio_url }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
